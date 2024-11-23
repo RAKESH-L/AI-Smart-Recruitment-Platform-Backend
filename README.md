@@ -1,1 +1,0 @@
-# AI-Smart-Recruitment-Platform-Backend
