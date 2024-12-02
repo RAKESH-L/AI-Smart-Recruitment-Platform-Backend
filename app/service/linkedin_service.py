@@ -8,10 +8,15 @@ from selenium.webdriver.common.keys import Keys # Import Keys for backspace func
 import time
 import pickle
 import os
+from selenium.webdriver.chrome.options import Options
+from chromedriver_py import binary_path 
 
 class LinkedInService:
     def __init__(self):
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
+        self.driver = webdriver.Chrome(service=webdriver.ChromeService(executable_path=binary_path), options=chrome_options)
+        # self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         self.cookies_file = 'linkedin_cookies.pkl'
 
     def login(self):
@@ -38,7 +43,7 @@ class LinkedInService:
     def post_job(self, job_title, job_description, job_location, skills):
         try:
             self.login()
-            self.driver.get('https://www.linkedin.com/job-posting/form/description/?isOneStepJobPost=true&jobId=4064789503&jobPostingFlowTrackingId=odogqssxSyu0pX6dbSV7GA%3D%3D&optInDraftWithAI=false&trk=flagship3_job_home')
+            self.driver.get('https://www.linkedin.com/job-posting/form/description/?isOneStepJobPost=true&jobId=4081997044&jobPostingFlowTrackingId=p2tlHJwDS42itL%2FaMoHQug%3D%3D&optInDraftWithAI=false&trk=nav_spotlight_post_job')
             print("Navigated to job posting form.")
 
             # Wait and fill out job title
@@ -116,7 +121,7 @@ class LinkedInService:
                 print(f"Failed to click 'Next' button: {e}")
 
             print("3rd stage")
-            time.sleep(3)
+            time.sleep(20)
             
             # Scroll and click the 'Continue' button
             continue_button = WebDriverWait(self.driver, 10).until(
