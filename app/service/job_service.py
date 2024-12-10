@@ -95,4 +95,7 @@ class JobService:
     def get_job_posting_logs_by_action(self, action):
         return self.job_repository.fetch_job_posting_logs_by_action(action)
     
+    def get_job_logs(self, performed_by_id):
+        """Get job logs based on the performed_by ID."""
+        return self.job_repository.get_job_logs_by_performed_by(performed_by_id)
     

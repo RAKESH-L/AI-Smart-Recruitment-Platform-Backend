@@ -66,8 +66,11 @@ def create_application():
 @application_controller.route('/getApplicationsByjobId/<int:job_id>', methods=['GET'])
 def get_applications_by_job_id(job_id):
     """ Get applications for a specific job ID """
+    job_title = request.args.get('job_title')  # Optional
+    status = request.args.get('status')  # Optional
+
     try:
-        applications = application_service.get_applications_by_job_id(job_id)
+        applications = application_service.get_applications_by_job_id(job_id, job_title, status)
         if not applications:
             return jsonify({'message': 'No applications found for this job ID.'}), 404
         
@@ -147,4 +150,20 @@ def get_resume(application_id):
             download_name='resume.pdf'  # Provide a name for the downloaded file
         )
     else:
-        return jsonify(resume_content), status_code
+        return jsonify(resume_content), status_code@application_controller.route('/applicationsBycreatedBy/<string:created_by>', methods=['GET'])
+
+@application_controller.route('/applicationsByCandidateId/<string:candidate_id>', methods=['GET'])
+def get_applications_by_candidateId(candidate_id):
+    """Fetch applications created by a specific user (creator). Optionally filter by job title and application status."""
+    job_title = request.args.get('job_title')  # Optional
+    status = request.args.get('status')  # Optional
+
+    try:
+        applications = application_service.get_applications_by_candidateId(candidate_id, job_title, status)
+        if applications:
+            return jsonify(applications), 200  # Respond with a list of applications
+        else:
+            return jsonify({'message': 'No applications found for this creator.'}), 404
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+    

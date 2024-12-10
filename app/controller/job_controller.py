@@ -107,3 +107,15 @@ def get_job_posting_logs_by_action(action):
     except Exception as e:
         return jsonify({'message': str(e)}), 500
     
+@job_controller.route('/jobLogsByPerformedById/<string:performed_by_id>', methods=['GET'])
+def get_job_logs(performed_by_id):
+    """Get job logs by performed_by ID."""
+    try:
+        logs = job_service.get_job_logs(performed_by_id)
+        if logs:
+            return jsonify(logs), 200  # Return logs with a 200 OK response
+        else:
+            return jsonify({'message': 'No job logs found for this user.'}), 404  # Not found response
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500  # Error response
+    

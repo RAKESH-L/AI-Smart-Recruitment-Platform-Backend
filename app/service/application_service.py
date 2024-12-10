@@ -38,8 +38,8 @@ class ApplicationService:
     def check_existing_application(self, job_id, phone_number):
         return self.application_repository.application_exists(job_id, phone_number)
     
-    def get_applications_by_job_id(self, job_id):
-        return self.application_repository.fetch_applications_by_job_id(job_id)
+    def get_applications_by_job_id(self, job_id, job_title=None, status=None):
+        return self.application_repository.fetch_applications_by_job_id(job_id, job_title=None, status=None)
     
     def update_application_status(self, application_id, status):
         return self.application_repository.update_status(application_id, status)
@@ -122,6 +122,9 @@ class ApplicationService:
             
     def get_applications_by_creator(self, created_by, job_title=None, status=None):
         return self.application_repository.fetch_applications_by_creator(created_by, job_title, status)
+    
+    def get_applications_by_candidateId(self, candidate_id, job_title=None, status=None):
+        return self.application_repository.fetch_applications_by_candiadteId(candidate_id, job_title, status)
     
     def get_resume_by_application_id(self, application_id):
         # Create a new connection for this operation

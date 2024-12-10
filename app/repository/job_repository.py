@@ -194,4 +194,26 @@ class JobRepository:
         finally:
             cursor.close()
             
-    
+    def get_job_logs_by_performed_by(self, performed_by_id):
+        """Fetch job logs based on the performed_by ID along with job titles."""
+        cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary for easy access to results
+        
+        try:
+            cursor.execute("""
+                SELECT 
+                    jpl.log_id,
+                    jpl.job_id,
+                    jpl.action,
+                    jpl.performed_by,
+                    jpl.timestamp,
+                    j.title AS job_title
+                FROM JobPostingLog jpl
+                JOIN Jobs j ON jpl.job_id = j.job_id
+                WHERE jpl.performed_by = %s
+            """, (performed_by_id,))
+            
+            return cursor.fetchall()  # Return all matching logs
+        except mysql.connector.Error as err:
+            raise Exception(f"Error fetching job logs: {err}")
+        finally:
+            cursor.close()

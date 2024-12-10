@@ -68,18 +68,50 @@ class ApplicationRepository:
         finally:
             cursor.close()
             
-    def fetch_applications_by_job_id(self, job_id):
+    def fetch_applications_by_job_id(self, job_id, job_title=None, status=None):
         cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary cursor for easy JSON conversion
         try:
-            cursor.execute("""
-                SELECT id, job_id, first_name, last_name, email, phone_number,
-                       experience, current_ctc, expected_ctc, resume, status, 
-                       submitted_at, updated_at 
-                FROM Applications 
-                WHERE job_id = %s
-            """, (job_id,))
+            query = """
+                SELECT a.id AS application_id,
+                       a.job_id,
+                       a.first_name,
+                       a.last_name,
+                       a.email,
+                       a.phone_number,
+                       a.experience,
+                       a.current_ctc,
+                       a.expected_ctc,
+                       a.resume,
+                       a.status AS application_status,
+                       a.submitted_at,
+                       a.updated_at,
+                       j.title AS job_title,
+                       j.description AS job_description,
+                       j.department AS job_department,
+                       j.experience AS job_experience,
+                       j.location AS job_location,
+                       j.employment_type AS job_employment_type,
+                       j.salary_range AS job_salary_range,
+                       j.status AS job_status
+                FROM Applications a
+                JOIN Jobs j ON a.job_id = j.job_id
+                WHERE j.job_id = %s
+            """
+            params = [job_id]  # Initialize with the creator ID
+
+            # Conditionally add filters
+            if job_title:
+                query += " AND j.title = %s"  # Add job title filter
+                params.append(job_title)
+
+            if status:
+                query += " AND a.status = %s"  # Add application status filter
+                params.append(status)
+
+            # Execute the final query
+            cursor.execute(query, params)
             applications = cursor.fetchall()
-            return applications  # Return list of applications
+            return applications  # Return results as a list of dictionaries
         except mysql.connector.Error as err:
             raise Exception(f"Error fetching applications by job ID: {err}")
         finally:
@@ -151,6 +183,56 @@ class ApplicationRepository:
                 WHERE j.created_by = %s
             """
             params = [created_by]  # Initialize with the creator ID
+
+            # Conditionally add filters
+            if job_title:
+                query += " AND j.title = %s"  # Add job title filter
+                params.append(job_title)
+
+            if status:
+                query += " AND a.status = %s"  # Add application status filter
+                params.append(status)
+
+            # Execute the final query
+            cursor.execute(query, params)
+            applications = cursor.fetchall()
+            return applications  # Return results as a list of dictionaries
+        except mysql.connector.Error as err:
+            raise Exception(f"Error fetching applications by creator: {err}")
+        finally:
+            cursor.close()
+            
+    def fetch_applications_by_candiadteId(self, candidate_id, job_title=None, status=None):
+        cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary cursor for easy conversion
+        try:
+            # Construct the base query
+            query = """
+                SELECT a.id AS application_id,
+                       a.job_id,
+                       a.first_name,
+                       a.last_name,
+                       a.email,
+                       a.phone_number,
+                       a.experience,
+                       a.current_ctc,
+                       a.expected_ctc,
+                       a.resume,
+                       a.status AS application_status,
+                       a.submitted_at,
+                       a.updated_at,
+                       j.title AS job_title,
+                       j.description AS job_description,
+                       j.department AS job_department,
+                       j.experience AS job_experience,
+                       j.location AS job_location,
+                       j.employment_type AS job_employment_type,
+                       j.salary_range AS job_salary_range,
+                       j.status AS job_status
+                FROM Applications a
+                JOIN Jobs j ON a.job_id = j.job_id
+                WHERE a.candidate_id = %s
+            """
+            params = [candidate_id]  # Initialize with the cadidate ID
 
             # Conditionally add filters
             if job_title:
