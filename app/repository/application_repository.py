@@ -12,8 +12,8 @@ class ApplicationRepository:
         try:
             cursor.execute("""
                 INSERT INTO Applications (job_id, first_name, last_name, email, phone_number,
-                    experience, current_ctc, expected_ctc, resume, status, candidate_id, offer_accepted_date)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    experience, current_ctc, expected_ctc, resume, status, candidate_id, offer_accepted_date, openai_score, nlp_score)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 application_data.get('job_id'),
                 application_data.get('first_name'),
@@ -26,7 +26,9 @@ class ApplicationRepository:
                 application_data.get('resume'),
                 application_data.get('status'),
                 application_data.get('candidate_id'),
-                application_data.get('offer_accepted_date')
+                application_data.get('offer_accepted_date'),
+                application_data.get('openai_score'),
+                application_data.get('nlp_score')
             ))
             self.db_connection.commit()
             return cursor.lastrowid  # Return the ID of the newly inserted application
@@ -85,6 +87,8 @@ class ApplicationRepository:
                        a.status AS application_status,
                        a.submitted_at,
                        a.updated_at,
+                       a.openai_score,
+                       a.nlp_score,
                        j.title AS job_title,
                        j.description AS job_description,
                        j.department AS job_department,
@@ -170,6 +174,8 @@ class ApplicationRepository:
                        a.status AS application_status,
                        a.submitted_at,
                        a.updated_at,
+                       a.openai_score,
+                       a.nlp_score,
                        j.title AS job_title,
                        j.description AS job_description,
                        j.department AS job_department,
@@ -220,6 +226,8 @@ class ApplicationRepository:
                        a.status AS application_status,
                        a.submitted_at,
                        a.updated_at,
+                       a.openai_score,
+                       a.nlp_score,
                        j.title AS job_title,
                        j.description AS job_description,
                        j.department AS job_department,
@@ -264,3 +272,19 @@ class ApplicationRepository:
             return None
         finally:
             self.cursor.close()  # Close cursor here, if applicable
+            
+    def get_job_description_by_job_id(self, job_id):
+        cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary for easy access to results
+        try:
+            self.cursor.execute("SELECT description FROM Jobs WHERE job_id = %s", (job_id,))
+            job = self.cursor.fetchone()
+            
+            if not job:
+                raise Exception("Job not found.")
+
+            job_description = job['description']
+            return job_description
+        except mysql.connector.Error as err:
+            raise Exception(f"Error fetching job logs: {err}")
+        finally:
+            cursor.close() 

@@ -85,26 +85,28 @@ class DatabaseService:
         """)
  
         self.cursor.execute("""
-                CREATE TABLE IF NOT EXISTS Applications (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    job_id INT,
-                    candidate_id VARCHAR(255),  -- New field added
-                    first_name VARCHAR(255),
-                    last_name VARCHAR(255),
-                    email VARCHAR(255) UNIQUE,
-                    phone_number VARCHAR(20),
-                    experience VARCHAR(255),
-                    current_ctc DECIMAL(10, 2),  # Change to appropriate number size
-                    expected_ctc DECIMAL(10, 2),  # Change to appropriate number size
-                    resume VARCHAR(255),  # Filepath for storing resumes
-                    status ENUM('submitted', 'shortlisted', 'interviewing', 'offered', 'accepted', 'rejected', 'hired'),
-                    offer_accepted_date TIMESTAMP NULL DEFAULT NULL,  # New column for offer acceptance date
-                    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    FOREIGN KEY (job_id) REFERENCES Jobs(job_id),
-                    FOREIGN KEY (candidate_id) REFERENCES Users(employee_id)  -- New foreign key constraint
-                )
-            """)
+            CREATE TABLE IF NOT EXISTS Applications (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                job_id INT,
+                candidate_id VARCHAR(255),
+                first_name VARCHAR(255),
+                last_name VARCHAR(255),
+                email VARCHAR(255) UNIQUE,
+                phone_number VARCHAR(20),
+                experience VARCHAR(255),
+                current_ctc DECIMAL(10, 2),
+                expected_ctc DECIMAL(10, 2),
+                resume VARCHAR(255),
+                status ENUM('submitted', 'shortlisted', 'interviewing', 'offered', 'accepted', 'rejected', 'hired'),
+                offer_accepted_date TIMESTAMP NULL DEFAULT NULL,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                openai_score DECIMAL(5, 2) DEFAULT NULL,  -- New field
+                nlp_score DECIMAL(5, 2) DEFAULT NULL,      -- New field
+                FOREIGN KEY (job_id) REFERENCES Jobs(job_id),
+                FOREIGN KEY (candidate_id) REFERENCES Users(employee_id)
+            )
+        """)
  
         # Interviews table
         self.cursor.execute("""

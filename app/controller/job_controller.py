@@ -45,7 +45,42 @@ def get_jobs_by_creator(created_by):
 
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+    
+@job_controller.route('/getAllJobs', methods=['GET'])
+def get_all_jobs():
+    """ Fetch all jobs created by a specific user and filter by status """
 
+    # Get the 'status' query parameter (optional)
+    status = request.args.get('status')
+
+    try:
+        jobs = job_service.get_all_jobs(status)
+
+        if jobs:
+            return jsonify(jobs), 200
+        else:
+            return jsonify({'message': 'No jobs found for this creator.'}), 404
+
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+@job_controller.route('/getJobByJobId/<string:jobId>', methods=['GET'])
+def get_job_jobId(jobId):
+    """ Fetch all jobs created by a specific user and filter by status """
+
+    # Get the 'status' query parameter (optional)
+    # status = request.args.get('status')
+
+    try:
+        jobs = job_service.getJobByJobId(jobId)
+
+        if jobs:
+            return jsonify(jobs), 200
+        else:
+            return jsonify({'message': 'No jobs found for this creator.'}), 404
+
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
     
 @job_controller.route('/updateJobDetailsByJobId/<int:job_id>', methods=['PUT'])
 def update_job(job_id):

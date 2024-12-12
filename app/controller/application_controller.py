@@ -1,11 +1,13 @@
 import os
 from flask import Blueprint, request, jsonify
 from app.service.application_service import ApplicationService
+from app.service.ats_service import ATSService
 from flask import send_file, jsonify
 import io
 
 application_controller = Blueprint('application_controller', __name__)
 application_service = ApplicationService()
+ats_service = ATSService()
 
 @application_controller.route('/postApplication', methods=['POST'])
 def create_application():
@@ -14,6 +16,8 @@ def create_application():
     # Define path to save resumes
     resume_upload_path = 'C:\\Users\\2000080631\\workspace\\Designathon 2024 - 2.0\\Candidates Resume'
 
+    # print("data", request.form)
+    # print("file", request.files)
     # Check if the request contains required fields and the file
     if 'resume' not in request.files or 'job_id' not in request.form:
         return jsonify({'message': 'Missing required fields or resume file.'}), 400
@@ -40,6 +44,15 @@ def create_application():
     else:
         return jsonify({'message': 'Invalid file type. Only .pdf and .docx are allowed.'}), 400
 
+    resume_content = ats_service.read_resume(resume_filepath)
+    
+     # Get job description from the database
+    job_description = application_service.get_job_description_by_job_id(job_id)
+
+    # Calculate the OpenAI score and NLP score
+    openai_score = ats_service.evaluate_candidate(job_description, resume_content)
+    nlp_score = ats_service.calculate_similarity(job_description, resume_content)
+
     # Prepare application data
     application_data = {
         'job_id': job_id,
@@ -53,7 +66,9 @@ def create_application():
         'resume': resume_filepath,  # Use the saved path
         'status': 'submitted',  # You can set a default status here
         'candidate_id': request.form.get('candidate_id'),
-        'offer_accepted_date': request.form.get('offer_accepted_date')
+        'offer_accepted_date': request.form.get('offer_accepted_date'),
+        'openai_score': openai_score,  # Assign calculated OpenAI score
+        'nlp_score': nlp_score           # Assign calculated NLP score
     }
 
     try:

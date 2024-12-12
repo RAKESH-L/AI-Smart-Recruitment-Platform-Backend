@@ -34,6 +34,9 @@ class ApplicationService:
             self.application_repository.insert_candidate_skills(application_id, skills)
 
         return application_id
+    
+    def get_job_description_by_job_id(self, job_id):
+        return self.application_repository.get_job_description_by_job_id(job_id)
 
     def check_existing_application(self, job_id, phone_number):
         return self.application_repository.application_exists(job_id, phone_number)

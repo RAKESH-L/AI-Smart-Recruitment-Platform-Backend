@@ -86,7 +86,71 @@ class JobRepository:
             raise Exception(f"Error fetching jobs by creator: {err}")
         finally:
             cursor.close()
+            
+    def fetch_all_jobs(self, status=None):
+        cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary cursor for easy JSON conversion
 
+        try:
+            # SQL query to fetch jobs and associated skills
+            query = """
+                SELECT j.job_id, j.title, j.description, j.department, j.experience,
+                    j.location, j.employment_type, j.salary_range, j.status, j.client, j.application_deadline,
+                    j.created_at, j.updated_at,
+                    GROUP_CONCAT(js.skill_name) AS skills
+                FROM Jobs j
+                LEFT JOIN JobSkills js ON js.job_id = j.job_id
+            """
+            
+            params = []
+
+            # If status is provided, add to the WHERE clause
+            if status:
+                # Split statuses by comma and sanitize input
+                status_list = status.split(',')
+                placeholders = ', '.join(['%s'] * len(status_list))  # Create a string of placeholders
+                query += f" AND j.status IN ({placeholders})"
+                params.extend(status_list)  # Add statuses to the parameters
+
+            query += " GROUP BY j.job_id"
+
+            # Execute the query with parameters
+            cursor.execute(query, params)
+            jobs = cursor.fetchall()
+
+            return jobs  # Return fetched job details with skills
+
+        except mysql.connector.Error as err:
+            raise Exception(f"Error fetching jobs by creator: {err}")
+        finally:
+            cursor.close()
+
+    def getJobByJobId(self, jobId):
+        cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary cursor for easy JSON conversion
+
+        try:
+            # SQL query to fetch jobs and associated skills
+            query = """
+                SELECT j.job_id, j.title, j.description, j.department, j.experience,
+                    j.location, j.employment_type, j.salary_range, j.status, j.client, j.application_deadline,
+                    j.created_at, j.updated_at,
+                    GROUP_CONCAT(js.skill_name) AS skills
+                FROM Jobs j
+                LEFT JOIN JobSkills js ON js.job_id = j.job_id
+                WHERE j.job_id = %s
+            """
+            
+            params = [jobId]
+
+            # Execute the query with parameters
+            cursor.execute(query, params)
+            jobs = cursor.fetchone()
+
+            return jobs  # Return fetched job details with skills
+
+        except mysql.connector.Error as err:
+            raise Exception(f"Error fetching jobs by creator: {err}")
+        finally:
+            cursor.close()
             
     def update_job(self, job_id, job_data):
         cursor = self.db_connection.cursor()

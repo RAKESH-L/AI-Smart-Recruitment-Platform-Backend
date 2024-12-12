@@ -21,8 +21,7 @@ class JobService:
         
     def create_job(self, job_data):
         # Insert the job into the database
-        # job_id = self.job_repository.insert_job(job_data)
-        job_id = 1
+        job_id = self.job_repository.insert_job(job_data)
 
         # Fetch the user's email based on the created_by ID
         created_by_id = job_data['created_by']  # Get created_by ID from job_data
@@ -44,7 +43,7 @@ class JobService:
             
             Thank you!
             """
-            self.email_service.send_email(user_email, subject, body)
+            # self.email_service.send_email(user_email, subject, body)
 
         return job_id
 
@@ -53,6 +52,12 @@ class JobService:
 
     def get_jobs_by_creator(self, created_by, status=None):
         return self.job_repository.fetch_jobs_by_creator(created_by, status)
+    
+    def get_all_jobs(self, status=None):
+        return self.job_repository.fetch_all_jobs( status)
+    
+    def getJobByJobId(self, jobId):
+        return self.job_repository.getJobByJobId(jobId)
     
     def update_job(self, job_id, job_data):
         return self.job_repository.update_job(job_id, job_data)
