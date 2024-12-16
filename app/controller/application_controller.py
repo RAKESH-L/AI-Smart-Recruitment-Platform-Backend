@@ -147,7 +147,9 @@ def get_applications_by_creator(created_by):
     try:
         applications = application_service.get_applications_by_creator(created_by, job_title, status)
         if applications:
-            return jsonify(applications), 200  # Respond with a list of applications
+            response = jsonify(applications)
+            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+            return response, 200 
         else:
             return jsonify({'message': 'No applications found for this creator.'}), 404
     except Exception as e:

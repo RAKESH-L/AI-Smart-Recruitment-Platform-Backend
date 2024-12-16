@@ -120,24 +120,24 @@ class ApplicationRepository:
             raise Exception(f"Error fetching applications by job ID: {err}")
         finally:
             cursor.close()
-    def update_status(self, application_id, status):
-        cursor = self.db_connection.cursor()
-        try:
-            cursor.execute("""
-                UPDATE Applications
-                SET status = %s, updated_at = CURRENT_TIMESTAMP
-                WHERE id = %s
-            """, (status, application_id))
+    # def update_status(self, application_id, status):
+    #     cursor = self.db_connection.cursor()
+    #     try:
+    #         cursor.execute("""
+    #             UPDATE Applications
+    #             SET status = %s, updated_at = CURRENT_TIMESTAMP
+    #             WHERE id = %s
+    #         """, (status, application_id))
 
-            self.db_connection.commit()
+    #         self.db_connection.commit()
 
-            # Check if any row was affected
-            return cursor.rowcount > 0  # True if the application was found and updated
-        except mysql.connector.Error as err:
-            self.db_connection.rollback()
-            raise Exception(f"Error updating application status: {err}")
-        finally:
-            cursor.close()
+    #         # Check if any row was affected
+    #         return cursor.rowcount > 0  # True if the application was found and updated
+    #     except mysql.connector.Error as err:
+    #         self.db_connection.rollback()
+    #         raise Exception(f"Error updating application status: {err}")
+    #     finally:
+    #         cursor.close()
             
     def update_status(self, application_id, status):
         cursor = self.db_connection.cursor()

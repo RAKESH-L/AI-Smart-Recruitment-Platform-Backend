@@ -119,17 +119,17 @@ class DatabaseService:
                 owner_id VARCHAR(255),
                 schedule_date DATETIME,
                 status ENUM('scheduled', 'completed', 'cancelled'),
-                feedback TEXT,
-                interviewMode ENUM('remote', 'in-person', 'video-call', 'phone-call', 'teams-call') DEFAULT 'remote',  -- New field for interview mode
-                interviewLocation VARCHAR(255) DEFAULT 'online',  -- New field for interview location with default value
+                feedback JSON,  -- Change this to TEXT if not using MySQL 5.7+
+                interviewMode ENUM('remote', 'in-person', 'video-call', 'phone-call', 'teams-call') DEFAULT 'remote',
+                interviewLocation VARCHAR(255) DEFAULT 'online',
                 FOREIGN KEY (job_id) REFERENCES Jobs(job_id),
                 FOREIGN KEY (interviewer_id) REFERENCES Users(employee_id),
                 FOREIGN KEY (application_id) REFERENCES Applications(id),
                 FOREIGN KEY (owner_id) REFERENCES Users(employee_id)
             )
         """)
-
- 
+        
+        
         # Performance Analytics table
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS PerformanceAnalytics (

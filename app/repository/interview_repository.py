@@ -1,4 +1,5 @@
 import mysql.connector
+import json
 
 class InterviewRepository:
     
@@ -7,9 +8,18 @@ class InterviewRepository:
 
     def insert_interview(self, interview_data):
         cursor = self.db_connection.cursor()
+
         try:
+            # Check if feedback exists
+            feedback = interview_data.get('feedback')
+            
+            if feedback is None or feedback == "":  # If feedback is not provided or is an empty string
+                feedback = None  # Set it to None for SQL to insert a NULL value
+            else:
+                feedback = json.dumps(feedback)  # Serialize to JSON string if feedback is present
+
             cursor.execute("""
-                INSERT INTO Interviews (type, job_id, interviewer_id, application_id, owner_id, 
+                INSERT INTO Interviews (type, job_id, interviewer_id, application_id, owner_id,
                                         schedule_date, status, feedback, interviewMode, interviewLocation)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
@@ -20,10 +30,11 @@ class InterviewRepository:
                 interview_data['owner_id'],
                 interview_data['schedule_date'],
                 interview_data['status'],
-                interview_data.get('feedback'),  # Feedback can be optional
-                interview_data['interviewMode'],
-                interview_data['interviewLocation']
+                feedback,  # This will be NULL if no feedback is provided
+                interview_data.get('interviewMode'),  # Fetch interviewMode safely
+                interview_data.get('interviewLocation')  # Fetch interviewLocation safely
             ))
+
             self.db_connection.commit()
             return cursor.lastrowid  # Return the ID of the newly inserted interview
         except mysql.connector.Error as err:
@@ -49,16 +60,20 @@ class InterviewRepository:
     def update_interview(self, interview_id, interview_data):
         cursor = self.db_connection.cursor()
         try:
-            # Start building the SQL query
             sql = "UPDATE Interviews SET "
             update_fields = []
             values = []
 
             # Dynamically build the SET clause based on the provided fields
             for key in interview_data:
-                if key in ['type', 'job_id', 'interviewer_id', 'application_id', 'owner_id', 'schedule_date', 'status', 'feedback']:
+                if key in ['type', 'job_id', 'interviewer_id', 'application_id', 'owner_id', 'schedule_date', 'status']:
                     update_fields.append(f"{key} = %s")
                     values.append(interview_data[key])
+                elif key == 'feedback':
+                    # Convert feedback dictionary to JSON string
+                    feedback_json = json.dumps(interview_data[key])  # Serialize to JSON
+                    update_fields.append("feedback = %s")
+                    values.append(feedback_json)
 
             # Ensure the interview ID is included in the values for the WHERE clause
             values.append(interview_id)
@@ -85,7 +100,27 @@ class InterviewRepository:
         cursor = self.db_connection.cursor(dictionary=True)
         try:
             cursor.execute("""
-                SELECT * FROM Interviews
+                SELECT 
+                    i.*,
+                    j.title AS job_title,
+                    j.description AS job_description,
+                    j.department AS job_department,
+                    j.location AS job_location,
+                    a.first_name AS applicant_first_name,
+                    a.last_name AS applicant_last_name,
+                    a.email AS applicant_email,
+                    a.phone_number AS applicant_phone,
+                    u_full.full_name AS interviewer_full_name,
+                    u_full.username AS interviewer_username,
+                    u_full.email AS interviewer_email,
+                    u_owner.full_name AS owner_full_name,
+                    u_owner.username AS owner_username,
+                    u_owner.email AS owner_email
+                FROM Interviews i
+                JOIN Jobs j ON i.job_id = j.job_id
+                JOIN Applications a ON i.application_id = a.id
+                JOIN Users u_full ON i.interviewer_id = u_full.employee_id  -- For Interviewer details
+                JOIN Users u_owner ON i.owner_id = u_owner.employee_id    -- For Owner details
                 WHERE interviewer_id = %s
             """, (interviewer_id,))
             return cursor.fetchall()  # Fetch all interviews for the given interviewer
