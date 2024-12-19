@@ -174,6 +174,17 @@ class DatabaseService:
                 FOREIGN KEY (application_id) REFERENCES Applications(id)
             )
         """)
+        
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Category (
+            category_id INT AUTO_INCREMENT PRIMARY KEY,
+            category_type ENUM('Department', 'Location', 'Employee Type') NOT NULL,
+            category_name VARCHAR(255) NOT NULL,
+            status ENUM('active', 'inactive') DEFAULT 'active',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    """)
  
         print("Tables created successfully.")
  
