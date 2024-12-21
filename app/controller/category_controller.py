@@ -30,3 +30,32 @@ def get_categories():
         return jsonify(categories), 200  # Return categories as JSON
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+    
+@category_controller.route('/updateCategoryById/<int:category_id>', methods=['PUT'])
+def update_category(category_id):
+    """ Update category details based on ID """
+    data = request.get_json()
+
+    # Validate input data
+    if not data:
+        return jsonify({'message': 'No data provided for update.'}), 400
+
+    try:
+        # Update category
+        rows_affected = category_service.update_category(category_id, data)
+        if rows_affected == 0:
+            return jsonify({'message': 'Category not found or no changes made.'}), 404
+        return jsonify({'message': 'Category updated successfully!'}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+    
+@category_controller.route('/deleteCategoryById/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    """ Delete a category based on its ID """
+    try:
+        rows_affected = category_service.delete_category(category_id)
+        if rows_affected == 0:
+            return jsonify({'message': 'Category not found.'}), 404
+        return jsonify({'message': 'Category deleted successfully!'}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500

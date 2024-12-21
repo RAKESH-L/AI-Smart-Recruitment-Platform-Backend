@@ -19,3 +19,9 @@ class CategoryService:
     
     def get_all_categories(self):
         return self.category_repository.fetch_all_categories()
+    
+    def update_category(self, category_id, category_data):
+        return self.category_repository.update_category(category_id, category_data)
+    
+    def delete_category(self, category_id):
+        return self.category_repository.delete_category(category_id)

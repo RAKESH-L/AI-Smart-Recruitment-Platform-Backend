@@ -37,3 +37,38 @@ class CategoryRepository:
             raise Exception(f"Error fetching categories: {err}")
         finally:
             cursor.close()
+            
+    def update_category(self, category_id, category_data):
+        cursor = self.db_connection.cursor()
+        try:
+            # Prepare the SQL query to update only provided fields
+            query = """
+                UPDATE Category
+                SET category_type = %s, category_name = %s, status = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE category_id = %s
+            """
+            cursor.execute(query, (
+                category_data.get('category_type'),
+                category_data.get('category_name'),
+                category_data.get('status', 'active'),  # Default to active if not provided
+                category_id
+            ))
+            self.db_connection.commit()
+            return cursor.rowcount  # Return number of rows affected
+        except mysql.connector.Error as err:
+            self.db_connection.rollback()
+            raise Exception(f"Error updating category: {err}")
+        finally:
+            cursor.close()
+            
+    def delete_category(self, category_id):
+        cursor = self.db_connection.cursor()
+        try:
+            cursor.execute("DELETE FROM Category WHERE category_id = %s", (category_id,))
+            self.db_connection.commit()
+            return cursor.rowcount  # Returns the number of rows affected
+        except mysql.connector.Error as err:
+            self.db_connection.rollback()
+            raise Exception(f"Error deleting category: {err}")
+        finally:
+            cursor.close()
