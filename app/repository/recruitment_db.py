@@ -185,6 +185,17 @@ class DatabaseService:
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     """)
+        self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS Report (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    reportName VARCHAR(255) NOT NULL,
+                    createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    createdBy VARCHAR(255) NOT NULL,
+                    filters JSON,
+                    fields_included JSON,
+                    data JSON
+                )
+            """)
  
         print("Tables created successfully.")
  
