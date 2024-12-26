@@ -56,7 +56,7 @@ class DatabaseService:
                 department VARCHAR(255),
                 experience VARCHAR(255),
                 location VARCHAR(255),
-                employment_type ENUM('full-time', 'part-time', 'contract'),
+                employment_type VARCHAR(255),
                 salary_range VARCHAR(255),
                 status ENUM('open', 'closed', 'in progress', 'drafted', 'deleted'),
                 client VARCHAR(255),
