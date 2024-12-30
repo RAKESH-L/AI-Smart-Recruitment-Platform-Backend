@@ -47,9 +47,9 @@ class InterviewService:
         """ Fetch interviews by owner ID """
         return self.interview_repository.fetch_interviews_by_owner(owner_id)
     
-    def get_interviews_by_application(self, application_id):
+    def get_interviews_by_application(self, job_id, application_id):
         """ Fetch interviews by application ID """
-        return self.interview_repository.fetch_interviews_by_application(application_id)
+        return self.interview_repository.fetch_interviews_by_application(job_id, application_id)
     
     def get_interviews_by_job_and_owner(self, job_id, owner_id):
         """ Fetch interviews by job ID and owner ID """

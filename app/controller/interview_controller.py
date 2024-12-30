@@ -64,15 +64,15 @@ def get_interviews_by_owner(owner_id):
     except Exception as e:
         return jsonify({'message': str(e)}), 500
     
-@interview_controller.route('/getInterviewsByApplicationId/<int:application_id>', methods=['GET'])
-def get_interviews_by_application(application_id):
+@interview_controller.route('/getInterviewsByJobIdAndApplicationId/<int:job_id>/<int:application_id>', methods=['GET'])
+def get_interviews_by_application(job_id, application_id):
     """ Get interviews by application ID """
     try:
-        interviews = interview_service.get_interviews_by_application(application_id)
+        interviews = interview_service.get_interviews_by_application(job_id, application_id)
         if interviews:
             return jsonify(interviews), 200
         else:
-            return jsonify({'message': 'No interviews found for this application.'}), 404
+            return jsonify({'message': 'No interviews found for this job and application.'}), 404
     except Exception as e:
         return jsonify({'message': str(e)}), 500
     

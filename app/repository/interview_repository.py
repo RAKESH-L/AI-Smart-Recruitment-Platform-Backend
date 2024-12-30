@@ -162,13 +162,13 @@ class InterviewRepository:
         finally:
             cursor.close()
             
-    def fetch_interviews_by_application(self, application_id):
+    def fetch_interviews_by_application(self, job_id, application_id):
         cursor = self.db_connection.cursor(dictionary=True)
         try:
             cursor.execute("""
                 SELECT * FROM Interviews
-                WHERE application_id = %s
-            """, (application_id,))
+                WHERE job_id = %s AND application_id = %s
+            """, (job_id, application_id,))
             return cursor.fetchall()  # Fetch all interviews for the given application
         except mysql.connector.Error as err:
             raise Exception(f"Error fetching interviews: {err}")
