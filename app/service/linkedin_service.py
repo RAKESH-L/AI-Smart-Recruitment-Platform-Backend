@@ -43,7 +43,7 @@ class LinkedInService:
     def post_job(self, job_title, job_description, job_location, skills):
         try:
             self.login()
-            self.driver.get('https://www.linkedin.com/job-posting/form/description/?isOneStepJobPost=true&jobId=4081997044&jobPostingFlowTrackingId=p2tlHJwDS42itL%2FaMoHQug%3D%3D&optInDraftWithAI=false&trk=nav_spotlight_post_job')
+            self.driver.get('https://www.linkedin.com/job-posting/form/description/?isOneStepJobPost=true&jobId=4115564319&jobPostingFlowTrackingId=p2tlHJwDS42itL%2FaMoHQug%3D%3D&optInDraftWithAI=false&trk=nav_spotlight_post_job')
             print("Navigated to job posting form.")
 
             # Wait and fill out job title
