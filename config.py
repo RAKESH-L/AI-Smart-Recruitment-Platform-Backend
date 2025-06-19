@@ -2,6 +2,9 @@ class Config:
     DEBUG = True
     
 # MySQL configurations
+# MYSQL_USERNAME = 'azure'
+# MYSQL_PASSWORD = 'Rakesh@12'
+# MYSQL_HOST = 'azmysql8standard.mysql.database.azure.com'
 MYSQL_USERNAME = 'root'
 MYSQL_PASSWORD = 'root'
 MYSQL_HOST = 'localhost'

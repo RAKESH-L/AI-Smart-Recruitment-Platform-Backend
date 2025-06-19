@@ -4,9 +4,8 @@ class ApplicationRepository:
 
     def __init__(self, db_connection):
         self.db_connection = db_connection
-        self.cursor = self.db_connection.cursor(dictionary=True)  # Use dictionary cursor for easier result handling
+        self.cursor = self.db_connection.cursor(dictionary=True) 
 
-    # Method to insert application
     def insert_application(self, application_data):
         cursor = self.db_connection.cursor()
         try:

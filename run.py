@@ -5,7 +5,7 @@ from app.repository.recruitment_db import DatabaseService
 
 app = create_app()
 app.config.from_object(Config)
-CORS(app)  # This will enable CORS for all routes of your Flask app
+CORS(app)  
 
 
 if __name__ == '__main__':

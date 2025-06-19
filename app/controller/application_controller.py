@@ -14,7 +14,7 @@ def create_application():
     """ Post details for applications """
 
     # Define path to save resumes
-    resume_upload_path = 'C:\\Users\\2000080631\\workspace\\Designathon 2024 - 2.0\\Candidates Resume'
+    resume_upload_path = 'C:\workspace\Designathon-2.0-2024\Database\Candidates Resume'
 
     # print("data", request.form)
     # print("file", request.files)
